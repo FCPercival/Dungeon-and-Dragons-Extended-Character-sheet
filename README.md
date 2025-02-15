@@ -10,8 +10,9 @@ Support the following languages:
 It is possible to add further languages with ease by creating a new "strings-XX.tex" file (Pull requests are welcome).
 
 # How to compile the LaTeX file
-To compile the LaTeX file use LuaLaTeX.
-The _eforms_ package is needed and is not included into TeXLive due to licensing issues.
+**Already compiled PDFs can be found on the releases page.**
+To compile the LaTeX file, use LuaLaTeX.
+The _eforms_ package is required and is not included in TeXLive due to licensing issues.
 
 ## How to install eforms if you are using TexLive
 Download the code from https://ctan.org/pkg/eforms, compile it and then move the directory into:
