@@ -1,0 +1,865 @@
+%TODO:
+%Privilegi e tratti
+%Verificare le pagine 2 e 3
+%Aggiungere parte nomi NPC
+%Calcolo modificatori automatico (abilità) e anche con CheckBox
+
+
+%HAS MODIFIER WITH AUTOMATIC CALCULATION
+%DING SYMBOLS
+%https://www3.nd.edu/~nmark/UsefulFacts/LaTeX_symbols.pdf
+
+%FOR CHECKBOXES -> HYPERREF PACKAGE
+%MANUAL https://texdoc.org/serve/hyperref/0
+
+
+\documentclass[a3paper,10pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{eforms}
+\usepackage[most,skins,breakable]{tcolorbox}
+\usepackage{multicol}
+\usepackage[table]{xcolor}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{luacode}
+\usepackage{wasysym}
+\usepackage{hyperref}
+\usepackage{darkmode}
+
+% Set fonts
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+
+% --- Dark mode setup ---
+\newif\ifdarkmode
+\darkmodetrue   % Uncomment this line for dark mode.
+%\darkmodefalse   % Uncomment this line for light mode.
+% -----------------------
+
+% --- FILE-BASED TRANSLATION SETUP ---
+% Define a macro for the selected language.
+% Change the value to "it" for Italian or "en" for English.
+\newcommand{\selectedlang}{en}
+% --------------------------------------
+
+
+% --------------------------- DO NOT EDIT BELOW THIS LINE ---------------------------
+
+\input{strings-\selectedlang.tex}
+
+
+% Conditionally enable or disable dark mode
+\ifdarkmode
+\enabledarkmode
+\else
+% Do nothing
+\fi
+
+
+% Define colors conditionally
+\ifdarkmode
+% In dark mode, use a dark background with bright frames/text.
+\definecolor{myBack}{RGB}{40,40,40} % Dark overall background
+\definecolor{myFrame}{RGB}{20,20,20} % Light (nearly white) frames for contrast
+\definecolor{myBox}{RGB}{60,60,60} % A slightly lighter dark gray for boxes
+\definecolor{myText}{RGB}{255,255,255} % White text for readability
+
+% For check boxes
+\definecolor{checkboxBG}{RGB}{40,40,40} % Dark background for check boxes
+\definecolor{checkboxSymbolColor}{RGB}{255,255,255} % White for check mark symbol
+\definecolor{checkboxBorderColor}{RGB}{0,0,0} % Black border for check boxes
+
+\else
+% In light mode, use standard colors.
+\definecolor{myBack}{RGB}{255,255,255} % White background
+\definecolor{myFrame}{RGB}{0,0,0}       % Black frame
+\definecolor{myBox}{RGB}{240,240,240}     % Light gray for boxes
+\definecolor{myText}{RGB}{0,0,0}       % black text
+
+% For check boxes
+\definecolor{checkboxBG}{RGB}{255,255,255} % White background for check boxes
+\definecolor{checkboxSymbolColor}{RGB}{0,0,0} % Black for check mark symbol
+\definecolor{checkboxBorderColor}{RGB}{0,0,0} % Black border for check boxes
+\fi
+
+
+% Adjust tcolorbox styles to use these colors
+\tcbset{%
+    dndbox/.style={%
+    enhanced,
+    colback=myBack,
+    colframe=myFrame,
+    coltext=myText,
+    boxrule=0.5mm,
+    sharp corners
+    },
+    dndboxgray/.style={%
+    enhanced,
+    colback=myBox,
+    colframe=myFrame,
+    coltext=myText,
+    boxrule=0.5mm,
+    sharp corners
+    }
+}
+
+
+\begin{document}
+
+
+%====================================================
+% FIRST PAGE: GENERAL DATA, CHARACTERISTICS, SKILLS, ETC.
+%====================================================
+
+%------------------------------------------------
+% HEADER - CHARACTER DATA
+%------------------------------------------------
+    \begin{tcolorbox}[dndboxgray,
+        title = {\CharacterHeader},
+        width=\textwidth
+    ]
+        \textbf{\NameLabel} \textField[\textColor{myText}]{Name_PG}{5cm}{12pt}
+        \quad
+        \textbf{\ClassLevelLabel} \textField[\textColor{myText}]{ClassLevel}{5cm}{12pt}
+        \quad
+        \textbf{\RaceLabel} \textField[\textColor{myText}]{Race}{4cm}{12pt}
+
+        \vspace{1ex}
+
+        \textbf{\BackgroundLabel} \textField[\textColor{myText}]{background}{4cm}{12pt}
+        \quad
+        \textbf{\PlayerLabel} \textField[\textColor{myText}]{Player}{4cm}{12pt}
+        \quad
+        \textbf{\AlignmentLabel} \textField[\textColor{myText}]{Alignment}{3cm}{12pt}
+        \quad
+        \textbf{\ExperiencePointsLabel} \textField[\textColor{myText}]{ExperiencePoints}{2cm}{12pt}
+    \end{tcolorbox}
+
+%------------------------------------------------
+% TWO COLUMNS: Characteristics, Saving Throws, Defence and Movement
+%------------------------------------------------
+    \begin{multicols}{2}
+
+% -- Left Column --
+
+% --- Features and Pitches Box ---
+        \begin{tcolorbox}[dndboxgray,
+            title = {\AttributesSavingThrowsBoxTitle},
+            width=\textwidth/2
+        ]
+            \begingroup
+            \newcounter{stat}
+            \renewcommand{\labelitemi}{%
+                \stepcounter{stat}%
+                \CheckBox[width=8pt,height=8pt,name=stat\arabic{stat},checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            }
+
+            % The table below lists ST, ability score and its modifier.
+            \noindent\begin{tabular}{c|l|c|c}
+                         \textbf{‎ ‎ ‎ ‎ ‎ \TSHeader} & & \textbf{\ValueHeader} & \textbf{\ModHeader} \vspace{0.25cm} \\
+
+                         % Strength row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Strength}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\StrengthLabel} &
+                         \textField[
+                             \textColor{myText}
+                             % Accept numeric input
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Strength}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Strength").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Strength}{1cm}{12pt} \vspace{0.25cm}\\
+
+                         % Dexterity row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Dexterity}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\DexterityLabel} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Dexterity}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Dexterity").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Dexterity}{1cm}{12pt} \vspace{0.25cm}\\
+
+                         % Constitution row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Constitution}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\ConstitutionLabel} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Constitution}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Constitution").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Constitution}{1cm}{12pt} \vspace{0.25cm}\\
+
+                         % Intelligence row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Intelligence}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\IntelligenceLabel} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Intelligence}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Intelligence").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Intelligence}{1cm}{12pt} \vspace{0.25cm}\\
+
+                         % Wisdom row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Wisdom}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\WisdomLabel} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Wisdom}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Wisdom").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Wisdom}{1cm}{12pt} \vspace{0.25cm}\\
+
+                         % Charisma row:
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{ST_Charisma}{0.6cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \textbf{\CharismaLabel} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AAKeystroke{AFNumber_Keystroke(1,1,0,0,"",true)}
+                                 \AAFormat{AFNumber_Format(1,1,0,0,"",true)}
+                             }
+                         ]{Charisma}{1.5cm}{12pt} &
+                         \textField[
+                             \textColor{myText}
+                             \AA{%
+                                 \AACalculate{%
+                                     var val = this.getField("Charisma").value;
+                                     if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
+                                     else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                 }
+                             }
+                         ]{mod_Charisma}{1cm}{12pt}\\
+            \end{tabular}
+            \endgroup
+        \end{tcolorbox}
+
+
+        % --- Skills Box ---
+        \begin{tcolorbox}[dndboxgray,
+            title = {\SkillsBoxTitle},
+            width=\textwidth/2
+        ]
+            \begingroup
+            \newcounter{skillCounter}
+            \renewcommand{\labelitemi}{%
+                \stepcounter{skillCounter}%
+                \CheckBox[width=8pt,height=8pt,name=skill\arabic{skillCounter},checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            }
+
+            \noindent\begin{tabular}{c|l}
+                         \textbf{‎ ‎ ‎ ‎ ‎ \SkillModHeader}                                                                                         & \vspace{0.25cm} \\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{acrobatics}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \AcrobaticsLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{animalHandling}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \AnimalHandlingLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{arcana}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \ArcanaLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{athletics}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \AthleticsLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{stealth}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \StealthLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{investigation}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \InvestigationLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{deception}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \DeceptionLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{intimidation}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \IntimidationLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{performance}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \PerformanceLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{insight}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \InsightLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{medicine}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \MedicineLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{nature}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \NatureLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{perception}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \PerceptionLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{persuasion}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \PersuasionLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{sleightOfHand}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \SleightOfHandLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{religion}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \ReligionLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{survival}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \SurvivalLabel \vspace{0.25cm}\\
+
+                         \begin{minipage}{1.5cm}
+                             \begin{itemize}
+                                 \item\textField[\textColor{myText}]{history}{0.5cm}{12pt}
+                             \end{itemize}
+                         \end{minipage} &
+                         \HistoryLabel
+            \end{tabular}
+            \endgroup
+        \end{tcolorbox}
+
+        % --- Current missions box ---
+        \begin{tcolorbox}[dndboxgray,
+            title = {\CurrentMissions},
+            width=\textwidth/2
+        ]
+            \textField[\Ff\FfMultiline\textColor{myText}]{CurrentMissionsBox}{12.3cm}{3.6cm}
+        \end{tcolorbox}
+
+
+% -- Right Column --
+        \columnbreak
+
+        % --- Box Defence and Movement ---
+        \begin{tcolorbox}[dndbox,
+            title = {\DefenseMovementBoxTitle},
+            width=\textwidth/2
+        ]
+            \textbf{\ArmorClassLabel} \textField[\textColor{myText}]{ArmorClass}{1cm}{12pt} \quad
+            \textbf{\InitiativeLabel} \textField[\textColor{myText}]{Initiative}{1cm}{12pt} \quad
+            \textbf{\SpeedLabel} \textField[\textColor{myText}]{Speed}{1cm}{12pt}
+        \end{tcolorbox}
+
+        \begin{tcolorbox}[dndbox,
+            title = {\HitPointsHitDiceBoxTitle},
+            width=\textwidth/2
+        ]
+            \textbf{\MaxHPLabel} \textField[\textColor{myText}]{MaxHP}{1cm}{12pt}
+            \quad \textbf{\CurrentHPLabel} \textField[\textColor{myText}]{urrentHP}{1cm}{12pt}
+            \quad \textbf{\TemporaryHPLabel} \textField[\textColor{myText}]{TemporaryHP}{1cm}{12pt}
+
+            \vspace{1ex}
+            \textbf{\HitDiceLabel} \textField[\textColor{myText}]{dv}{2cm}{12pt}
+
+%Saving throws against death (3 checkboxes per sal)
+            \vspace{1ex}
+            \textbf{\DeathSavingThrowsLabel}
+            \SuccessesLabel‎
+            \CheckBox[width=12pt,height=12pt,name=ts_morte3,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            \hspace{0.05cm}
+            \CheckBox[width=12pt,height=12pt,name=ts_morte4,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            \hspace{0.05cm}
+            \CheckBox[width=12pt,height=12pt,name=ts_morte5,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            \hspace{0.2cm}
+            \FailuresLabel‎
+            \CheckBox[width=12pt,height=12pt,name=ts_morte1,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            \hspace{0.05cm}
+            \CheckBox[width=12pt,height=12pt,name=ts_morte2,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+            \hspace{0.05cm}
+            \CheckBox[width=12pt,height=12pt,name=ts_morte6,checkboxsymbol=\ding{108},bordercolor=checkboxBorderColor,backgroundcolor=checkboxBG,color=checkboxSymbolColor]{\textcolor{black}}%
+
+
+
+        \end{tcolorbox}
+
+
+        \begin{tcolorbox}[dndbox,
+            title = {\ResourcesOtherFeaturesBoxTitle},
+            width=\textwidth/2
+        ]
+            \textbf{\PassivePerceptionLabel} \textField[\textColor{myText}]{PassivePerception}{1cm}{12pt}
+            \quad \textbf{\InspirationLabel} \textField[\textColor{myText}]{Inspiration}{1cm}{12pt}
+
+            \vspace{1ex}
+            \\ \textbf{\ProficiencyBonusLabel} \textField[\textColor{myText}]{ProficiencyBonus}{1cm}{12pt}
+        \end{tcolorbox}
+
+
+
+        \begin{tcolorbox}[dndbox,
+            title = {\AttacksSpellsBoxTitle},
+            width=\textwidth/2
+        ]
+            \textbf{\SpecialAttackPointsLabel} \textField[\textColor{myText}]{SpecialAttackPoints}{1cm}{12pt}
+            \quad \textbf{\CurrentAttackPointsLabel} \textField[\textColor{myText}]{CurrentAttackPoints}{1cm}{12pt}
+            \\
+
+            \noindent\begin{tabular}{l|c|c|c}
+
+                         \textbf{\AttackNameHeader} & \textbf{\AttackBonusHeader} & \textbf{\DamageTypeHeader} & \textbf{\UsesHeader} \vspace{0.25cm}\\
+
+                         \textField[\textColor{myText}]{attacco1}{3cm}{12pt} & \textField[\textColor{myText}]{txc1}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno1}{2cm}{12pt} & \textField[\textColor{myText}]{usi1}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco2}{3cm}{12pt} & \textField[\textColor{myText}]{txc2}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno2}{2cm}{12pt} & \textField[\textColor{myText}]{usi2}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco3}{3cm}{12pt} & \textField[\textColor{myText}]{txc3}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno3}{2cm}{12pt} & \textField[\textColor{myText}]{usi3}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco4}{3cm}{12pt} & \textField[\textColor{myText}]{txc4}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno4}{2cm}{12pt} & \textField[\textColor{myText}]{usi4}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco5}{3cm}{12pt} & \textField[\textColor{myText}]{txc5}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno5}{2cm}{12pt} & \textField[\textColor{myText}]{usi5}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco6}{3cm}{12pt} & \textField[\textColor{myText}]{txc6}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno6}{2cm}{12pt} & \textField[\textColor{myText}]{usi6}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco7}{3cm}{12pt} & \textField[\textColor{myText}]{txc7}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno7}{2cm}{12pt} & \textField[\textColor{myText}]{usi7}{1cm}{12pt} \vspace{0.25cm}\\
+                         \textField[\textColor{myText}]{attacco8}{3cm}{12pt} & \textField[\textColor{myText}]{txc8}{1cm}{12pt} &
+                         \textField[\textColor{myText}]{danno8}{2cm}{12pt} & \textField[\textColor{myText}]{usi8}{1cm}{12pt} \vspace{0.25cm}\\
+
+            \end{tabular}
+            \vspace{0.25cm}
+            \textField[\Ff\FfMultiline\textColor{myText}]{OtherAttacks}{12cm}{8cm}
+        \end{tcolorbox}
+
+
+    \end{multicols}
+
+    \begin{tcolorbox}[dndboxgray,
+        title = {\NotesEquipmentBoxTitle},
+        width=\textwidth
+    ]
+        \textbf{\LanguagesSkillsLabel} \textField[\textColor{myText}]{LanguagesSkills}{21cm}{12pt}
+
+        \vspace{1ex}
+        \textbf{\EquipmentLabel} \textField[\Ff\FfMultiline\textColor{myText}]{Equipment}{22.3cm}{5cm}
+
+        \vspace{1ex}
+        \textbf{\AdditionalNotesLabel} \textField[\Ff\FfMultiline\textColor{myText}]{AdditionalNotes}{22.5cm}{4cm}
+    \end{tcolorbox}
+
+%====================================================
+% SECOND PAGE: CHARACTER DETAILS
+%====================================================
+    \newpage
+
+    \begin{tcolorbox}[dndboxgray,
+        title = {\DetailsHeader},
+        width=\textwidth
+    ]
+        \textbf{\AgeLabel} \textField[\textColor{myText}]{Age}{2cm}{12pt}
+        \quad
+        \textbf{\HeightLabel} \textField[\textColor{myText}]{Height}{2cm}{12pt}
+        \quad
+        \textbf{\WeightLabel} \textField[\textColor{myText}]{Weight}{2cm}{12pt}
+        \quad
+        \textbf{\EyesLabel} \textField[\textColor{myText}]{Eyes}{2cm}{12pt}
+        %\vspace{1ex}
+        \quad
+        \textbf{\HairLabel} \textField[\textColor{myText}]{Hair}{2cm}{12pt}
+        \quad
+        \textbf{\SkinLabel} \textField[\textColor{myText}]{Skin}{2cm}{12pt}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[dndbox,
+        title = {\AppearanceHeader},
+        width=\textwidth
+    ]
+%\textbf{Tratti Personali, ideali, legami e difetti:}\\
+        \textField[\Ff\FfMultiline\textColor{myText}]{Appearance}{25.5cm}{6cm}
+
+%\vspace{1ex}
+%\textbf{Ideali:}\\
+%\textField[\Ff\FfMultiline]{ideali}{17cm}{2cm}
+%
+%\vspace{1ex}
+%\textbf{Legami:}\\
+%\textField[\Ff\FfMultiline]{legami}{17cm}{2cm}
+%
+%\vspace{1ex}
+%\textbf{Difetti:}\\
+%\textField[\Ff\FfMultiline]{difetti}{17cm}{2cm}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[dndbox,
+        title = {\HistoryHeader},
+        width=\textwidth
+    ]
+        \textField[\Ff\FfMultiline\textColor{myText}]{History}{25.5cm}{6cm}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[dndbox,
+        title = {\AlliesHeader},
+        width=\textwidth
+    ]
+        \textField[\Ff\FfMultiline\textColor{myText}]{Allies}{25.5cm}{4cm}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[dndbox,
+        title = {\TreasureHeader},
+        width=\textwidth
+    ]
+        \textbf{\CopperCoinsLabel} \textField[\textColor{myText}]{CopperCoins}{2cm}{12pt}
+        \quad
+        \textbf{\SilverCoinsLabel} \textField[\textColor{myText}]{SilverCoins}{2cm}{12pt}
+        \quad
+        \textbf{\GoldCoinsLabel} \textField[\textColor{myText}]{GoldCoins}{2cm}{12pt}
+        \quad
+        \textbf{\PlatinumCoinsLabel} \textField[\textColor{myText}]{PlatinumCoins}{2cm}{12pt}
+
+        \vspace{1ex}
+        \textbf{\OtherTreasuresLabel}\\
+        \textField[\Ff\FfMultiline\textColor{myText}]{OtherTreasures}{25.5cm}{6cm}
+        \\\\
+        \textbf{\ShareableTreasuresLabel}\\
+        \textField[\Ff\FfMultiline\textColor{myText}]{ShareableTreasures}{25.5cm}{6cm}
+    \end{tcolorbox}
+
+%====================================================
+% THIRD PAGE: SPELLS
+%====================================================
+    \newpage
+
+    \begin{tcolorbox}[dndboxgray,
+        title = {\SpellsHeader},
+        width=\textwidth
+    ]
+        \textbf{\SpellcasterClassLabel} \textField[\textColor{myText}]{SpellcasterClass}{3cm}{12pt}
+        \quad
+        \textbf{\SpellcastingAbilityLabel} \textField[\textColor{myText}]{SpellcastingAbility}{3cm}{12pt}
+        \quad
+        \textbf{\SpellSaveDCLabel} \textField[\textColor{myText}]{SpellSaveDC}{2cm}{12pt}
+        \vspace{1ex}
+        \\
+        \textbf{\SpellAttackBonusLabel} \textField[\textColor{myText}]{SpellAttackBonus}{2cm}{12pt}
+    \end{tcolorbox}
+
+    \begin{multicols}{3}
+%---------------------------
+% COLUMN 1: TRICKS, LEVEL 1, LEVEL 2
+%---------------------------
+        \begin{tcolorbox}[dndbox,
+            title = {\CantripsHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip5}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{cantrip6}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelOneHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv1_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv1_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv1_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv1_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv1_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelTwoHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv2_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv2_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv2_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv2_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv2_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\columnbreak
+%---------------------------
+% COLUMN 2: LEVEL 3, LEVEL 4, LEVEL 5
+%---------------------------
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelThreeHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv3_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv3_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv3_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv3_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv3_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelFourHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv4_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv4_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv4_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv4_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv4_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelFiveHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv5_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv5_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv5_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv5_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv5_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\columnbreak
+%---------------------------
+% COLUMN 3: LEVEL 6, LEVEL 7, LEVEL 8, LEVEL 9
+%---------------------------
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelSixHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv6_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv6_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv6_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv6_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv6_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelSevenHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv7_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv7_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv7_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv7_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv7_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        %\vspace{0.5em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelEightHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv8_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv8_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv8_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv8_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv8_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+
+        \vspace{2.8em}
+        \begin{tcolorbox}[dndbox,
+            title = {\SpellLevelNineHeader},
+            width=\linewidth,
+            height=8cm
+        ]
+            \begin{itemize}
+                \item[$\circ$] \textField[\textColor{myText}]{liv9_1}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv9_2}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv9_3}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv9_4}{5cm}{12pt}
+                \item[$\circ$] \textField[\textColor{myText}]{liv9_5}{5cm}{12pt}
+            \end{itemize}
+        \end{tcolorbox}
+    \end{multicols}
+
+%====================================================
+% FOURTH PAGE: BLANK SPACES FOR NOTES
+%====================================================
+    \newpage
+    \begin{tcolorbox}[dndboxgray,
+        title = {\MovesAbilitiesHeader},
+        width=\textwidth
+    ]
+        \textField[\Ff\FfMultiline\textColor{myText}]{DescriptionMovesAndSkills}{25.5cm}{38.5cm}
+    \end{tcolorbox}
+
+%====================================================
+% FIFTH PAGE: BACKSTORY SPACE
+%====================================================
+
+    \newpage
+    \begin{tcolorbox}[dndboxgray,
+        title = {\BackstoryHeader},
+        width=\textwidth
+    ]
+        \textField[\Ff\FfMultiline\textColor{myText}]{DescriptionBackStory}{25.5cm}{38.5cm}
+    \end{tcolorbox}
+
+\end{document}
