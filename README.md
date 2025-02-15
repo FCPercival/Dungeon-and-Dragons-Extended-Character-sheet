@@ -11,7 +11,7 @@ Features:
     - Support for multiple languages
       - English
       - Italian
-      - Possibility to add more languages (by creating a new "strings-XX.tex" file)
+      - It is possible to add more languages (by creating a new "strings-XX.tex" file)
 
 # How to compile the LaTeX file
 **Already compiled PDFs can be found on the releases page.**
