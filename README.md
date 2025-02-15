@@ -30,3 +30,6 @@ Or if you are using Linux:
 And then run the following command:
 
 ```mktexlsr```
+
+# Missing features
+Auto-calculating for skills and on check-boxes is not implemented.
