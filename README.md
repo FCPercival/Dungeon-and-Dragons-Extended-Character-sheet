@@ -3,11 +3,15 @@
 This LaTeX character sheet is designed for use in Dungeon and Dragons sessions, offering plenty of space for additional information.
 An autoupdater is included (via the PDFUpdater.py file), which automatically updates older sheets to the latest version.
 
-Support the following languages:
- - English
- - Italian
-
-It is possible to add further languages with ease by creating a new "strings-XX.tex" file (Pull requests are welcome).
+Features:
+    - Autoupdater
+    - Customizable character sheet
+    - More notes space
+    - White and dark mode
+    - Support for multiple languages
+      - English
+      - Italian
+      - Possibility to add more languages (by creating a new "strings-XX.tex" file)
 
 # How to compile the LaTeX file
 **Already compiled PDFs can be found on the releases page.**
