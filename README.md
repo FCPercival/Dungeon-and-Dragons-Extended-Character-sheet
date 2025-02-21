@@ -33,3 +33,7 @@ And then run the following command:
 
 # Missing features
 Auto-calculating for skills and on check-boxes is not implemented.
+
+# Possible errors that could be encountered
+- _xref table error_ during the execution of the update script
+  - This could be due to the presence of special emoji in a TextField, fix this by saving the PDF (as new) and using this file as input instead.    
