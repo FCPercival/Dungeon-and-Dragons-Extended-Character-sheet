@@ -108,6 +108,67 @@
     }
 }
 
+\begin{insDLJS}[]{skillJS}{JavaScript for skill calculations}
+    // Function to calculate all skill values
+    function calculateSkills() {
+        // Get ability modifiers
+        var strMod = parseInt(this.getField("mod_Strength").value) || 0;
+        var dexMod = parseInt(this.getField("mod_Dexterity").value) || 0;
+        var conMod = parseInt(this.getField("mod_Constitution").value) || 0;
+        var intMod = parseInt(this.getField("mod_Intelligence").value) || 0;
+        var wisMod = parseInt(this.getField("mod_Wisdom").value) || 0;
+        var chaMod = parseInt(this.getField("mod_Charisma").value) || 0;
+
+        // Get proficiency bonus
+        var profBonus = parseInt(this.getField("ProficiencyBonus").value) || 0;
+
+        // Update each skill based on its related ability and proficiency
+        updateSkill("acrobatics", dexMod, "skill1", profBonus);
+        updateSkill("animalHandling", wisMod, "skill2", profBonus);
+        updateSkill("arcana", intMod, "skill3", profBonus);
+        updateSkill("athletics", strMod, "skill4", profBonus);
+        updateSkill("stealth", dexMod, "skill5", profBonus);
+        updateSkill("investigation", intMod, "skill6", profBonus);
+        updateSkill("deception", chaMod, "skill7", profBonus);
+        updateSkill("intimidation", chaMod, "skill8", profBonus);
+        updateSkill("performance", chaMod, "skill9", profBonus);
+        updateSkill("insight", wisMod, "skill10", profBonus);
+        updateSkill("medicine", wisMod, "skill11", profBonus);
+        updateSkill("nature", intMod, "skill12", profBonus);
+        updateSkill("perception", wisMod, "skill13", profBonus);
+        updateSkill("persuasion", chaMod, "skill14", profBonus);
+        updateSkill("sleightOfHand", dexMod, "skill15", profBonus);
+        updateSkill("religion", intMod, "skill16", profBonus);
+        updateSkill("survival", wisMod, "skill17", profBonus);
+        updateSkill("history", intMod, "skill18", profBonus);
+
+        // Also update saving throws
+        updateSkill("ST_Strength", strMod, "stat1", profBonus);
+        updateSkill("ST_Dexterity", dexMod, "stat2", profBonus);
+        updateSkill("ST_Constitution", conMod, "stat3", profBonus);
+        updateSkill("ST_Intelligence", intMod, "stat4", profBonus);
+        updateSkill("ST_Wisdom", wisMod, "stat5", profBonus);
+        updateSkill("ST_Charisma", chaMod, "stat6", profBonus);
+    }
+
+    // Helper function to update a single skill
+    function updateSkill(skillName, abilityMod, checkboxName, profBonus) {
+        var isProficient = this.getField(checkboxName).value === "Yes";
+        var skillValue = abilityMod;
+
+        if (isProficient) {
+            skillValue += profBonus;
+        }
+
+        // Format positive numbers with a "+" sign
+        if (skillValue > 0) {
+            this.getField(skillName).value = "+" + skillValue;
+        } else {
+            this.getField(skillName).value = skillValue.toString();
+        }
+    }
+\end{insDLJS}
+
 
 \begin{document}
 
@@ -138,6 +199,15 @@
         \textbf{\AlignmentLabel} \textField[\textColor{myText}]{Alignment}{3cm}{12pt}
         \quad
         \textbf{\ExperiencePointsLabel} \textField[\textColor{myText}]{ExperiencePoints}{2cm}{12pt}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[dndboxgray,
+        title = {\ProficiencyBonusTitle},
+        width=\textwidth
+    ]
+        \textbf{\ProficiencyBonusLabel} \textField[\textColor{myText}]{ProficiencyBonus}{2cm}{12pt}
+        \quad
+        \PushButton[name=calculateButton,onclick={calculateSkills();},width=4cm,height=0.8cm]{\UpdateSkillsButtonLabel}
     \end{tcolorbox}
 
 %------------------------------------------------
