@@ -30,6 +30,8 @@
 \usepackage{wasysym}
 \usepackage{hyperref}
 \usepackage{darkmode}
+\usepackage{pifont}
+\usepackage{fontawesome5}
 
 % Set fonts
 \setmainfont{Latin Modern Roman}
@@ -199,15 +201,8 @@
         \textbf{\AlignmentLabel} \textField[\textColor{myText}]{Alignment}{3cm}{12pt}
         \quad
         \textbf{\ExperiencePointsLabel} \textField[\textColor{myText}]{ExperiencePoints}{2cm}{12pt}
-    \end{tcolorbox}
-
-    \begin{tcolorbox}[dndboxgray,
-        title = {\ProficiencyBonusTitle},
-        width=\textwidth
-    ]
-        \textbf{\ProficiencyBonusLabel} \textField[\textColor{myText}]{ProficiencyBonus}{2cm}{12pt}
         \quad
-        \PushButton[name=calculateButton,onclick={calculateSkills();},width=4cm,height=0.8cm]{\UpdateSkillsButtonLabel}
+        \PushButton[name=calculateButton,onclick={calculateSkills();},width=4cm,height=0.8cm]{\faSync\space\UpdateSkillsButtonLabel}
     \end{tcolorbox}
 
 %------------------------------------------------
