@@ -201,8 +201,6 @@
         \textbf{\AlignmentLabel} \textField[\textColor{myText}]{Alignment}{3cm}{12pt}
         \quad
         \textbf{\ExperiencePointsLabel} \textField[\textColor{myText}]{ExperiencePoints}{2cm}{12pt}
-        \quad
-        \PushButton[name=calculateButton,onclick={calculateSkills();},width=4cm,height=0.8cm]{\faSync\space\UpdateSkillsButtonLabel}
     \end{tcolorbox}
 
 %------------------------------------------------
@@ -231,7 +229,7 @@
                          % Strength row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Strength}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Strength}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\StrengthLabel} &
@@ -244,12 +242,13 @@
                              }
                          ]{Strength}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Strength").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Strength}{1cm}{12pt} \vspace{0.25cm}\\
@@ -257,7 +256,7 @@
                          % Dexterity row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Dexterity}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Dexterity}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\DexterityLabel} &
@@ -269,12 +268,13 @@
                              }
                          ]{Dexterity}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Dexterity").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Dexterity}{1cm}{12pt} \vspace{0.25cm}\\
@@ -282,7 +282,7 @@
                          % Constitution row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Constitution}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Constitution}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\ConstitutionLabel} &
@@ -294,12 +294,13 @@
                              }
                          ]{Constitution}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Constitution").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Constitution}{1cm}{12pt} \vspace{0.25cm}\\
@@ -307,7 +308,7 @@
                          % Intelligence row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Intelligence}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Intelligence}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\IntelligenceLabel} &
@@ -319,12 +320,13 @@
                              }
                          ]{Intelligence}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Intelligence").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Intelligence}{1cm}{12pt} \vspace{0.25cm}\\
@@ -332,7 +334,7 @@
                          % Wisdom row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Wisdom}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Wisdom}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\WisdomLabel} &
@@ -344,12 +346,13 @@
                              }
                          ]{Wisdom}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Wisdom").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Wisdom}{1cm}{12pt} \vspace{0.25cm}\\
@@ -357,7 +360,7 @@
                          % Charisma row:
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{ST_Charisma}{0.6cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{ST_Charisma}{0.6cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \textbf{\CharismaLabel} &
@@ -369,12 +372,13 @@
                              }
                          ]{Charisma}{1.5cm}{12pt} &
                          \textField[
-                             \textColor{myText}
+                             \textColor{myText} \Ff{\FfReadOnly}
                              \AA{%
                                  \AACalculate{%
                                      var val = this.getField("Charisma").value;
                                      if(val === "" || isNaN(parseInt(val,10))) { event.value = ""; }
                                      else { event.value = Math.floor((parseInt(val,10)-10)/2); }
+                                     calculateSkills();
                                  }
                              }
                          ]{mod_Charisma}{1cm}{12pt}\\
@@ -400,126 +404,126 @@
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{acrobatics}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{acrobatics}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \AcrobaticsLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{animalHandling}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{animalHandling}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \AnimalHandlingLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{arcana}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{arcana}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \ArcanaLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{athletics}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{athletics}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \AthleticsLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{stealth}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{stealth}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \StealthLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{investigation}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{investigation}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \InvestigationLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{deception}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{deception}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \DeceptionLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{intimidation}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{intimidation}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \IntimidationLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{performance}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{performance}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \PerformanceLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{insight}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{insight}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \InsightLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{medicine}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{medicine}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \MedicineLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{nature}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{nature}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \NatureLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{perception}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{perception}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \PerceptionLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{persuasion}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{persuasion}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \PersuasionLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{sleightOfHand}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{sleightOfHand}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \SleightOfHandLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{religion}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{religion}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \ReligionLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{survival}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{survival}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \SurvivalLabel \vspace{0.25cm}\\
 
                          \begin{minipage}{1.5cm}
                              \begin{itemize}
-                                 \item\textField[\textColor{myText}]{history}{0.5cm}{12pt}
+                                 \item\textField[\textColor{myText}\Ff{\FfReadOnly}]{history}{0.5cm}{12pt}
                              \end{itemize}
                          \end{minipage} &
                          \HistoryLabel
@@ -590,7 +594,13 @@
             \quad \textbf{\InspirationLabel} \textField[\textColor{myText}]{Inspiration}{1cm}{12pt}
 
             \vspace{1ex}
-            \\ \textbf{\ProficiencyBonusLabel} \textField[\textColor{myText}]{ProficiencyBonus}{1cm}{12pt}
+            \\ \textbf{\ProficiencyBonusLabel} \textField[\textColor{myText}\AA{%
+                \AACalculate{%
+                    calculateSkills();
+                }
+            }]{ProficiencyBonus}{1cm}{12pt}
+            \quad
+            \PushButton[name=calculateButton,onclick={calculateSkills();},width=4cm,height=0.8cm]{\faSync\space\UpdateSkillsButtonLabel}
         \end{tcolorbox}
 
 
@@ -642,7 +652,7 @@
         \textbf{\EquipmentLabel} \textField[\Ff\FfMultiline\textColor{myText}]{Equipment}{22.3cm}{5cm}
 
         \vspace{1ex}
-        \textbf{\AdditionalNotesLabel} \textField[\Ff\FfMultiline\textColor{myText}]{AdditionalNotes}{22.5cm}{4cm}
+        \textbf{\AdditionalNotesLabel} \textField[\Ff\FfMultiline\textColor{myText}]{AdditionalNotes}{22.5cm}{3.9cm}
     \end{tcolorbox}
 
 %====================================================
